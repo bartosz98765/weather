@@ -16,7 +16,12 @@ class MainView(ListView):
         return context
 
     def render_to_response(self, context, **response_kwargs):
+        weather_data = self.__get_data(context)
+        return JsonResponse(weather_data, safe=False)
+
+    @staticmethod
+    def __get_data(context):
         weather_data = {"location": context["location"]}
         weather_data.update({"current": context["current"]})
         weather_data.update({"daily": context["daily"]})
-        return JsonResponse(weather_data, safe=False)
+        return weather_data
