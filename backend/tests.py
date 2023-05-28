@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import patch
 
 from django.test import Client, TestCase
@@ -121,16 +122,19 @@ class WeatherApiAdapter:
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
+        self.current_time = self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
 
     @patch.object(WeatherApiAdapter, "get_history")
     @patch.object(WeatherApiAdapter, "get_forecast")
+    @patch("backend.views.datetime")
     def test_response_for_new_location_has_json_with_all_data(
-        self, get_forecast, get_history
+        self, mock_date, get_forecast, get_history
     ):
         city = "bialystok"
         url = f"/main/{city}"
         get_forecast.return_value = CURRENT_AND_FORECAST_FROM_API_2_DAYS
         get_history.return_value = BUNDLED_5_DAYS_HISTORY_DATA
+        mock_date.now.return_value = self.current_time
 
         response = self.client.get(url)
 
