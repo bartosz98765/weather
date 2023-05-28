@@ -22,9 +22,7 @@ class CurrentWeather(models.Model):
     precip_mm = models.IntegerField()
     humidity = models.IntegerField()
     condition = models.CharField(max_length=256)
-    location = models.ForeignKey(
-        Location, null=False,  on_delete=models.CASCADE
-    )
+    location = models.ForeignKey(Location, null=False, on_delete=models.CASCADE)
 
 
 class DailyWeather(models.Model):
@@ -36,6 +34,4 @@ class DailyWeather(models.Model):
     totalprecip_mm = models.IntegerField()
     avghumidity = models.IntegerField()
     condition = models.CharField(max_length=256)
-    location = models.ForeignKey(
-        Location, null=False, on_delete=models.CASCADE
-    )
+    location = models.ForeignKey(Location, null=False, on_delete=models.CASCADE)
