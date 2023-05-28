@@ -1,5 +1,9 @@
-from django.http import HttpResponse
+import json
+
+from django.http import JsonResponse
 from django.views.generic import ListView
+
+from backend.tests import EXPECTED_WEATHER_DATA
 
 
 class MainView(ListView):
@@ -7,4 +11,5 @@ class MainView(ListView):
         return []
 
     def render_to_response(self, context, **response_kwargs):
-        return HttpResponse("")
+        data = EXPECTED_WEATHER_DATA
+        return JsonResponse(data, safe=False)
