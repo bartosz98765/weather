@@ -1,27 +1,30 @@
 from django.http import JsonResponse
-from django.views.generic import ListView
+from django.views import View
 
+from backend.models import Location, CurrentWeather, DailyWeather
 from backend.tests import EXPECTED_WEATHER_DATA
 
 
-class MainView(ListView):
-    def get_queryset(self):
-        return []
+class MainView(View):
+    def get(self, request, city):
+        context = {
+            "location": self.__get_location(name=city),
+            "current": self.__get_current_weather(name=city),
+            "daily": self.__get_daily_weather(name=city),
+        }
+        return JsonResponse(context, safe=False)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["location"] = EXPECTED_WEATHER_DATA["location"]
-        context["current"] = EXPECTED_WEATHER_DATA["current"]
-        context["daily"] = EXPECTED_WEATHER_DATA["daily"]
-        return context
+    def __get_location(self, name):
+        # location = Location.objects.get_or_create(name=name)
+        location = EXPECTED_WEATHER_DATA["location"]
+        return location
 
-    def render_to_response(self, context, **response_kwargs):
-        weather_data = self.__get_data(context)
-        return JsonResponse(weather_data, safe=False)
+    def __get_current_weather(self, name):
+        # current = CurrentWeather.objects.get_or_create(name=name)
+        current = EXPECTED_WEATHER_DATA["current"]
+        return current
 
-    @staticmethod
-    def __get_data(context):
-        weather_data = {"location": context["location"]}
-        weather_data.update({"current": context["current"]})
-        weather_data.update({"daily": context["daily"]})
-        return weather_data
+    def __get_daily_weather(self, name):
+        # daily = DailyWeather.objects.get_or_create(name=name)
+        daily = EXPECTED_WEATHER_DATA["daily"]
+        return daily
