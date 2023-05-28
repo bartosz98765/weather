@@ -359,3 +359,12 @@ HISTORY_FROM_API_DAY_1 = {
         ]
     },
 }
+
+BUNDLED_WEATHER_DATA = {
+    "forecast": CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+    "history_1": HISTORY_FROM_API_DAY_1,
+    "history_2": HISTORY_FROM_API_DAY_2,
+    "history_3": HISTORY_FROM_API_DAY_3,
+    "history_4": HISTORY_FROM_API_DAY_4,
+    "history_5": HISTORY_FROM_API_DAY_5,
+}
