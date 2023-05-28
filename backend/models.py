@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import ForeignKey
-
 
 class Location(models.Model):
     name = models.CharField(max_length=64)
