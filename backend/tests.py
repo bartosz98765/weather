@@ -107,9 +107,10 @@ class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_context_has_all_weather_data(self):
+    def test_response_has_json_with_all_weather_data(self):
         url = "/main/"
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
