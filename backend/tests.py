@@ -127,7 +127,8 @@ class TestMainView(TestCase):
     def test_response_for_new_location_has_json_with_all_data(
         self, get_forecast, get_history
     ):
-        url = "/main/"
+        city = "bialystok"
+        url = f"/main/{city}"
         get_forecast.return_value = CURRENT_AND_FORECAST_FROM_API_2_DAYS
         get_history.return_value = BUNDLED_5_DAYS_HISTORY_DATA
 
