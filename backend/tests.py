@@ -2,7 +2,10 @@ from unittest.mock import patch
 
 from django.test import Client, TestCase
 
-from backend.test_data.api_data import BUNDLED_WEATHER_DATA
+from backend.test_data.api_data import (
+    BUNDLED_5_DAYS_HISTORY_DATA,
+    CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+)
 
 EXPECTED_WEATHER_DATA = {
     "location": {
@@ -111,15 +114,22 @@ class WeatherApiAdapter:
     def get_forecast(self):
         pass
 
+    def get_history(self):
+        pass
+
 
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
 
+    @patch.object(WeatherApiAdapter, "get_history")
     @patch.object(WeatherApiAdapter, "get_forecast")
-    def test_response_for_new_location_has_json_with_all_data(self, get_forecast):
+    def test_response_for_new_location_has_json_with_all_data(
+        self, get_forecast, get_history
+    ):
         url = "/main/"
-        get_forecast.return_value = BUNDLED_WEATHER_DATA
+        get_forecast.return_value = CURRENT_AND_FORECAST_FROM_API_2_DAYS
+        get_history.return_value = BUNDLED_5_DAYS_HISTORY_DATA
 
         response = self.client.get(url)
 
