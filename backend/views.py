@@ -3,7 +3,6 @@ from django.views.generic import ListView
 
 
 class MainView(ListView):
-
     def get_queryset(self):
         return []
 
