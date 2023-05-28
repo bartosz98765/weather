@@ -17,7 +17,6 @@ EXPECTED_WEATHER_DATA = {
         "pressure_mb": 1027,
         "precip_mm": 0,
         "humidity": 37,
-        "cloud": 29,
     },
     "daily": [
         {
