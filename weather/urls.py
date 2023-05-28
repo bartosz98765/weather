@@ -1,5 +1,7 @@
 from django.urls import path
 
+from backend.views import MainView
+
 urlpatterns = [
-    #    path("admin/", admin.site.urls),
+       path('main/', MainView.as_view(), name='main-main'),
 ]

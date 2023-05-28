@@ -6,7 +6,7 @@ class TestMainView(TestCase):
         self.client = Client()
 
     def test_context_has_all_weather_data(self):
-        url = "/main"
+        url = "/main/"
 
         response = self.client.get(url)
 
