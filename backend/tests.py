@@ -9,6 +9,7 @@ EXPECTED_WEATHER_DATA = {
         "tz_id": "Europe/Warsaw",
     },
     "current": {
+        "time_epoch": 1685268900,
         "temp_c": 13.2,
         "condition": "//static/partly-cloudy.png",
         "wind_kph": 21.6,
