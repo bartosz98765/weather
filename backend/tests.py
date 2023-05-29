@@ -7,6 +7,7 @@ from backend.test_data.api_data import (
     BUNDLED_5_DAYS_HISTORY_DATA,
     CURRENT_AND_FORECAST_FROM_API_2_DAYS,
 )
+from backend.weatherapi_adapter import WeatherApiAdapter
 
 EXPECTED_WEATHER_DATA = {
     "location": {
@@ -109,14 +110,6 @@ EXPECTED_WEATHER_DATA = {
         },
     ],
 }
-
-
-class WeatherApiAdapter:
-    def get_forecast(self):
-        pass
-
-    def get_history(self):
-        pass
 
 
 class TestMainView(TestCase):
