@@ -122,7 +122,7 @@ class WeatherApiAdapter:
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.current_time = self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
+        self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
 
     @patch.object(WeatherApiAdapter, "get_history")
     @patch.object(WeatherApiAdapter, "get_forecast")
