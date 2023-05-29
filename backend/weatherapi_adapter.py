@@ -1,4 +1,5 @@
 import logging
+import requests
 
 from marshmallow import Schema, fields, pre_load, ValidationError
 
@@ -12,6 +13,9 @@ class LocationSchema(Schema):
     longitude = fields.Float(required=True, load_from="lon")
     timezone = fields.String(required=True, load_from="tz_id")
 
+    class Meta:
+        strict = True
+
 
 class CurrentWeatherSchema(Schema):
     time_epoch = fields.Integer(required=True, load_from="last_updated_epoch")
@@ -22,6 +26,9 @@ class CurrentWeatherSchema(Schema):
     precip_mm = fields.Integer(required=True)
     humidity = fields.Integer(required=False)
     condition = fields.String(required=True)
+
+    class Meta:
+        strict = True
 
     @pre_load
     def get_condition(self, data):
@@ -38,6 +45,9 @@ class DailyWeatherSchema(Schema):
     totalprecip_mm = fields.Integer(required=True)
     avghumidity = fields.Integer(required=False)
     condition = fields.String(required=True)
+
+    class Meta:
+        strict = True
 
     @pre_load
     def get_condition(self, data):
