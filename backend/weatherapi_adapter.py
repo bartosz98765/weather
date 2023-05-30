@@ -24,7 +24,7 @@ class LocationSchema(Schema):
 
 
 class CurrentWeatherSchema(Schema):
-    time_epoch = fields.Integer(required=True, data_key="last_updated_epoch")
+    last_updated = fields.DateTime(required=True)
     temp_c = fields.Float(required=True)
     wind_kph = fields.Float(required=False)
     wind_dir = fields.String(required=False)
@@ -48,7 +48,7 @@ class CurrentWeatherSchema(Schema):
 
 
 class DailyWeatherSchema(Schema):
-    time_epoch = fields.Integer(required=True, data_key="date_epoch")
+    date = fields.Date(required=True)
     maxtemp_c = fields.Float(required=True)
     mintemp_c = fields.Float(required=True)
     avgtemp_c = fields.Float(required=False)
