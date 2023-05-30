@@ -20,7 +20,6 @@ class MainView(View):
         }
         return JsonResponse(context, safe=False)
 
-
     def __get_daily_weather(self, name: str, now: datetime):
         # daily = DailyWeather.objects.get_or_create(name=name)
         daily = EXPECTED_WEATHER_DATA["daily"]

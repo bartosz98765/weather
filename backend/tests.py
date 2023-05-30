@@ -10,7 +10,6 @@ from backend.test_data.api_data import (
 from backend.weatherapi_adapter import WeatherApiAdapter
 
 
-
 EXPECTED_WEATHER_DATA = {
     "location": {
         "name": "Bialystok",
@@ -112,6 +111,8 @@ EXPECTED_WEATHER_DATA = {
         },
     ],
 }
+
+
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()

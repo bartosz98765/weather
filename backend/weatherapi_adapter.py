@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import List
 
 import requests
-from marshmallow import Schema, ValidationError, fields, pre_load
+from django.utils.text import slugify
+from marshmallow import Schema, ValidationError, fields, pre_load, post_load
 from requests import ConnectionError, Timeout
 
 from weather.settings import API_KEY, FORECAST_DAYS_NO, WEATHER_API_ENDPOINT
@@ -65,6 +66,14 @@ class DailyWeatherSchema(Schema):
         data["condition"] = data["day"]["condition"]["text"]
         return data
 
+    @post_load
+    def add_condition_path(self, data, many, partial):
+        data["condition"] = self.__make_condition_path(data["condition"])
+        return data
+
+    def __make_condition_path(self, condition):
+        return f"//static//{slugify(condition).lower()}.png"
+
 
 def prepare_location_object(location_data: dict):
     try:
@@ -98,7 +107,9 @@ class WeatherApiAdapter:
             return {
                 "location": prepare_location_object(forecast["location"]),
                 "current": prepare_current_object(forecast["current"]),
-                "daily": prepare_daily_objects_list(forecast["forecast"]["forecastday"]),
+                "daily": prepare_daily_objects_list(
+                    forecast["forecast"]["forecastday"]
+                ),
             }
 
     def get_history(self):
