@@ -9,23 +9,25 @@ from backend.test_data.api_data import (
 )
 from backend.weatherapi_adapter import WeatherApiAdapter
 
+
+
 EXPECTED_WEATHER_DATA = {
     "location": {
         "name": "Bialystok",
         "country": "Poland",
-        "lat": 53.13,
-        "lon": 23.08,
-        "tz_id": "Europe/Warsaw",
+        "latitude": 53.13,
+        "longitude": 23.08,
+        "timezone": "Europe/Warsaw",
     },
     "current": {
         "time_epoch": 1685268900,
         "temp_c": 13.2,
-        "condition": "//static/partly-cloudy.png",
         "wind_kph": 21.6,
         "wind_dir": "NNE",
         "pressure_mb": 1027,
         "precip_mm": 0,
         "humidity": 37,
+        "condition": "//static/partly-cloudy.png",
     },
     "daily": [
         {
@@ -110,15 +112,13 @@ EXPECTED_WEATHER_DATA = {
         },
     ],
 }
-
-
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
         self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
 
     @patch.object(WeatherApiAdapter, "get_history")
-    @patch.object(WeatherApiAdapter, "get_forecast")
+    @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
     def test_response_for_new_location_has_json_with_all_data(
         self, mock_date, get_forecast, get_history
@@ -132,4 +132,5 @@ class TestMainView(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        breakpoint()
         self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
