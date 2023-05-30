@@ -19,7 +19,7 @@ EXPECTED_WEATHER_DATA = {
         "timezone": "Europe/Warsaw",
     },
     "current": {
-        "last_updated": "2023-05-27 17:15",
+        "last_updated": "2023-05-27T17:15:00",
         "temp_c": 13.2,
         "wind_kph": 21.6,
         "wind_dir": "NNE",
