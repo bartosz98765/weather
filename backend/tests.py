@@ -118,7 +118,7 @@ class TestMainView(TestCase):
         self.client = Client()
         self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
 
-    @patch.object(WeatherApiAdapter, "get_history")
+    @patch.object(WeatherApiAdapter, "get_history_day")
     @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
     def test_response_for_new_location_has_json_with_all_data(

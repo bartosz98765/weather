@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import requests
 from django.utils.text import slugify
@@ -91,6 +91,13 @@ def prepare_current_object(current_data: dict):
         log.error(error)
 
 
+def prepare_daily_object(daily_data: dict) -> dict:
+    try:
+        return DailyWeatherSchema(unknown="exclude").load(daily_data)
+    except ValidationError as error:
+        log.error(error)
+
+
 def prepare_daily_objects_list(daily_data: dict) -> List[dict]:
     try:
         return DailyWeatherSchema(unknown="exclude", many=True).load(daily_data)
@@ -109,13 +116,16 @@ class WeatherApiAdapter:
             return {
                 "location": prepare_location_object(forecast["location"]),
                 "current": prepare_current_object(forecast["current"]),
-                "daily": prepare_daily_objects_list(
+                "forecast_daily": prepare_daily_objects_list(
                     forecast["forecast"]["forecastday"]
                 ),
             }
 
-    def get_history(self):
-        pass
+    def get_history_day(self, city: str, past_day) -> dict:
+        url = f"history.json?key={API_KEY}&q={city}&dt={past_day}"
+        history = self.get_data_from_api(url)
+        if history:
+            return prepare_daily_object(history["forecast"]["forecastday"])
 
     @staticmethod
     def get_data_from_api(url: str):
