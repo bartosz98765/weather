@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.http import JsonResponse
 from django.views import View
 
-from backend.models import Location, CurrentWeather, DailyWeather
+from backend.models import CurrentWeather, DailyWeather, Location
 from backend.weatherapi_adapter import WeatherApiAdapter
 
 

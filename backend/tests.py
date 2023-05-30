@@ -3,12 +3,10 @@ from unittest.mock import patch
 
 from django.test import Client, TestCase
 
-from backend.test_data.api_data import (
-    BUNDLED_DAILY_DATA_FROM_API,
-    CURRENT_AND_FORECAST_FROM_API_2_DAYS, return_history_day,
-)
+from backend.test_data.api_data import (BUNDLED_DAILY_DATA_FROM_API,
+                                        CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+                                        return_history_day)
 from backend.weatherapi_adapter import WeatherApiAdapter
-
 
 EXPECTED_WEATHER_DATA = {
     "location": {
