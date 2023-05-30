@@ -23,10 +23,10 @@ class MainView(View):
         }
         return JsonResponse(context, safe=False)
 
-    def __get_daily_weather(self, city: str, now: datetime, past_day_no: int):
+    def __get_daily_weather(self, city: str, now: datetime, past_day_count: int):
         # daily = DailyWeather.objects.get_or_create(name=name)
         daily = []
-        for i in range(past_day_no, 0, -1):
+        for i in range(past_day_count, 0, -1):
             past_day = (now - timedelta(i)).strftime("%Y-%m-%d")
             history = WeatherApiAdapter().get_history_day(city, past_day)
             if history:
