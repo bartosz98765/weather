@@ -23,7 +23,8 @@ class MainView(View):
         }
         return JsonResponse(context, safe=False)
 
-    def __get_daily_weather(self, city: str, now: datetime, past_day_count: int):
+    @staticmethod
+    def __get_daily_weather(city: str, now: datetime, past_day_count: int):
         # daily = DailyWeather.objects.get_or_create(name=name)
         daily = []
         for i in range(past_day_count, 0, -1):
