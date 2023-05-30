@@ -53,7 +53,7 @@ class DailyWeatherSchema(Schema):
     mintemp_c = fields.Float(required=True)
     avgtemp_c = fields.Float(required=False)
     maxwind_kph = fields.Float(required=False)
-    totalprecip_mm = fields.Integer(required=True)
+    totalprecip_mm = fields.Float(required=True)
     avghumidity = fields.Integer(required=False)
     condition = fields.String(required=True)
 
@@ -125,7 +125,7 @@ class WeatherApiAdapter:
         url = f"history.json?key={API_KEY}&q={city}&dt={past_day}"
         history = self.get_data_from_api(url)
         if history:
-            return prepare_daily_object(history["forecast"]["forecastday"])
+            return prepare_daily_object(history["forecast"]["forecastday"][0])
 
     @staticmethod
     def get_data_from_api(url: str):

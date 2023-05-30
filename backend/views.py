@@ -1,26 +1,34 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.http import JsonResponse
 from django.views import View
 
 from backend.models import Location, CurrentWeather, DailyWeather
-from backend.tests import EXPECTED_WEATHER_DATA
 from backend.weatherapi_adapter import WeatherApiAdapter
 
 
 class MainView(View):
     def get(self, request, city: str):
         now = datetime.now()
-        result = WeatherApiAdapter().get_forecast(city)
+        forecast = WeatherApiAdapter().get_forecast(city)
+        past_day_no = 5
+
+        daily = self.__get_daily_weather(city, now, past_day_no)
+        daily.extend(forecast["forecast_daily"])
 
         context = {
-            "location": result["location"],
-            "current": result["current"],
-            "daily": self.__get_daily_weather(name=city, now=now),
+            "location": forecast["location"],
+            "current": forecast["current"],
+            "daily": daily,
         }
         return JsonResponse(context, safe=False)
 
-    def __get_daily_weather(self, name: str, now: datetime):
+    def __get_daily_weather(self, city: str, now: datetime, past_day_no: int):
         # daily = DailyWeather.objects.get_or_create(name=name)
-        daily = EXPECTED_WEATHER_DATA["daily"]
+        daily = []
+        for i in range(past_day_no, 0, -1):
+            past_day = (now - timedelta(i)).strftime("%Y-%m-%d")
+            history = WeatherApiAdapter().get_history_day(city, past_day)
+            if history:
+                daily.append(history)
         return daily
