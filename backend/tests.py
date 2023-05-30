@@ -4,8 +4,8 @@ from unittest.mock import patch
 from django.test import Client, TestCase
 
 from backend.test_data.api_data import (
-    BUNDLED_5_DAYS_HISTORY_DATA,
-    CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+    BUNDLED_DAILY_DATA_FROM_API,
+    CURRENT_AND_FORECAST_FROM_API_2_DAYS, return_history_day,
 )
 from backend.weatherapi_adapter import WeatherApiAdapter
 
@@ -30,84 +30,84 @@ EXPECTED_WEATHER_DATA = {
     },
     "daily": [
         {
-            "date_epoch": 1684800000,  #  current minus 5 days
+            "time_epoch": 1684713600,  # current minus 5 days
+            "maxtemp_c": 19.5,
+            "mintemp_c": 12.4,
+            "avgtemp_c": 15.4,
+            "maxwind_kph": 7.9,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 63,
+            "condition": "//static/partly-cloudy.png",
+        },
+        {
+            "time_epoch": 1684800000,  #  current minus 4 days
             "maxtemp_c": 20.6,
             "mintemp_c": 11.4,
             "avgtemp_c": 15.7,
             "maxwind_kph": 13.7,
-            "totalprecip_mm": 0,
+            "totalprecip_mm": 0.0,
             "avghumidity": 64,
-            "condition": "//static/sunny.png",
+            "condition": "//static/partly-cloudy.png",
         },
         {
-            "date_epoch": 1684886400,  #  current minus 4 days
-            "maxtemp_c": 21.6,
-            "mintemp_c": 12.4,
+            "time_epoch": 1684886400,  #  current minus 3 days
+            "maxtemp_c": 21.9,
+            "mintemp_c": 12.9,
             "avgtemp_c": 16.7,
-            "maxwind_kph": 14.7,
-            "totalprecip_mm": 1,
-            "avghumidity": 65,
-            "condition": "//static/partly_cloudy.png",
+            "maxwind_kph": 13.0,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 60,
+            "condition": "//static/partly-cloudy.png",
         },
         {
-            "date_epoch": 1684972800,  #  current minus 3 days
+            "time_epoch": 1684972800,  #  current minus 2 days
             "maxtemp_c": 22.6,
-            "mintemp_c": 13.4,
-            "avgtemp_c": 14.7,
-            "maxwind_kph": 15.7,
-            "totalprecip_mm": 5,
-            "avghumidity": 56,
-            "condition": "//static/partly_sunny.png",
+            "mintemp_c": 13.6,
+            "avgtemp_c": 17.7,
+            "maxwind_kph": 10.4,
+            "totalprecip_mm": 1.3,
+            "avghumidity": 69,
+            "condition": "//static/patchy-rain-possible.png",
         },
         {
-            "date_epoch": 1685059200,  #  current minus 2 days
-            "maxtemp_c": 19.6,
-            "mintemp_c": 10.4,
-            "avgtemp_c": 13.7,
-            "maxwind_kph": 9.7,
-            "totalprecip_mm": 0,
-            "avghumidity": 52,
+            "time_epoch": 1685059200,  #  current minus 1 days
+            "maxtemp_c": 22.5,
+            "mintemp_c": 7.6,
+            "avgtemp_c": 14.9,
+            "maxwind_kph": 21.6,
+            "totalprecip_mm": 0.2,
+            "avghumidity": 73,
             "condition": "//static/overcast.png",
         },
         {
-            "date_epoch": 1685145600,  # current minus 1 day
-            "maxtemp_c": 18.6,
-            "mintemp_c": 9.4,
-            "avgtemp_c": 11.7,
-            "maxwind_kph": 8.7,
-            "totalprecip_mm": 6,
-            "avghumidity": 51,
-            "condition": "//static/clear.png",
+            "time_epoch": 1685145600,  # current day
+            "maxtemp_c": 17.3,
+            "mintemp_c": 4.9,
+            "avgtemp_c": 11.3,
+            "maxwind_kph": 22.3,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 59,
+            "condition": "//static/sunny.png",
         },
         {
-            "date_epoch": 1685232000,  # current day
-            "maxtemp_c": 17.6,
-            "mintemp_c": 7.4,
-            "avgtemp_c": 10.7,
-            "maxwind_kph": 4.7,
-            "totalprecip_mm": 2,
-            "avghumidity": 50,
-            "condition": "//static/cloudy.png",
+            "time_epoch": 1685232000,  # current plus 1 day
+            "maxtemp_c": 21.9,
+            "mintemp_c": 5.5,
+            "avgtemp_c": 13.8,
+            "maxwind_kph": 9.0,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 56,
+            "condition": "//static/sunny.png",
         },
         {
-            "date_epoch": 1685318400,  # current plus 1 day
-            "maxtemp_c": 21.6,
-            "mintemp_c": 12.4,
-            "avgtemp_c": 15.7,
-            "maxwind_kph": 10.7,
-            "totalprecip_mm": 4,
-            "avghumidity": 55,
-            "condition": "//static/partly_sunny.png",
-        },
-        {
-            "date_epoch": 1685404800,  # current plus 2 days
-            "maxtemp_c": 21.6,
-            "mintemp_c": 12.4,
-            "avgtemp_c": 15.7,
-            "maxwind_kph": 10.7,
-            "totalprecip_mm": 4,
-            "avghumidity": 55,
-            "condition": "//static/partly_sunny.png",
+            "time_epoch": 1685318400,  # current plus 2 day
+            "maxtemp_c": 21.2,
+            "mintemp_c": 8.1,
+            "avgtemp_c": 15.5,
+            "maxwind_kph": 9.4,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 62,
+            "condition": "//static/partly-cloudy.png",
         },
     ],
 }
@@ -118,16 +118,14 @@ class TestMainView(TestCase):
         self.client = Client()
         self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
 
-    @patch.object(WeatherApiAdapter, "get_history_day")
     @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
     def test_response_for_new_location_has_json_with_all_data(
-        self, mock_date, get_forecast, get_history
+        self, mock_date, get_data_from_api
     ):
         city = "bialystok"
         url = f"/main/{city}"
-        get_forecast.return_value = CURRENT_AND_FORECAST_FROM_API_2_DAYS
-        get_history.return_value = BUNDLED_5_DAYS_HISTORY_DATA
+        get_data_from_api.side_effect = return_history_day
         mock_date.now.return_value = self.current_time
 
         response = self.client.get(url)

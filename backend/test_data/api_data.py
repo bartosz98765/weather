@@ -1,3 +1,5 @@
+from weather.settings import API_KEY
+
 CURRENT_AND_FORECAST_FROM_API_2_DAYS = {
     "location": {
         "name": "Bialystok",
@@ -347,7 +349,7 @@ HISTORY_FROM_API_DAY_1 = {
                     "avgvis_miles": 5,
                     "avghumidity": 73,
                     "condition": {
-                        "text": "Patchy rain possible",
+                        "text": "Overcast",
                         "icon": "//cdn.weatherapi.com/weather/64x64/day/176.png",
                         "code": 1063,
                     },
@@ -360,10 +362,15 @@ HISTORY_FROM_API_DAY_1 = {
     },
 }
 
-BUNDLED_5_DAYS_HISTORY_DATA = {
-    "history_1": HISTORY_FROM_API_DAY_1,
-    "history_2": HISTORY_FROM_API_DAY_2,
-    "history_3": HISTORY_FROM_API_DAY_3,
-    "history_4": HISTORY_FROM_API_DAY_4,
-    "history_5": HISTORY_FROM_API_DAY_5,
+BUNDLED_DAILY_DATA_FROM_API = {
+    f"forecast.json?key={API_KEY}&q=bialystok&days=3": CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-26": HISTORY_FROM_API_DAY_1,
+    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-25": HISTORY_FROM_API_DAY_2,
+    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-24": HISTORY_FROM_API_DAY_3,
+    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-23": HISTORY_FROM_API_DAY_4,
+    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-22": HISTORY_FROM_API_DAY_5,
 }
+
+
+def return_history_day(url):
+    return BUNDLED_DAILY_DATA_FROM_API[url]
