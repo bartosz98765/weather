@@ -13,7 +13,7 @@ class Location(models.Model):
 
 
 class CurrentWeather(models.Model):
-    time_epoch = models.IntegerField()
+    last_updated = models.DateTimeField()
     temp_c = models.FloatField()
     wind_kph = models.FloatField()
     wind_dir = models.CharField(max_length=3)
@@ -25,7 +25,7 @@ class CurrentWeather(models.Model):
 
 
 class DailyWeather(models.Model):
-    time_epoch = models.IntegerField()
+    date = models.DateField()
     maxtemp_c = models.FloatField()
     mintemp_c = models.FloatField()
     avgtemp_c = models.FloatField()
