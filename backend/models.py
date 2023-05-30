@@ -30,7 +30,7 @@ class DailyWeather(models.Model):
     mintemp_c = models.FloatField()
     avgtemp_c = models.FloatField()
     maxwind_kph = models.FloatField()
-    totalprecip_mm = models.IntegerField()
+    totalprecip_mm = models.FloatField()
     avghumidity = models.IntegerField()
     condition = models.CharField(max_length=256)
     location = models.ForeignKey(Location, null=False, on_delete=models.CASCADE)
