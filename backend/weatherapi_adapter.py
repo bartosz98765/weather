@@ -4,7 +4,7 @@ from typing import List
 
 import requests
 from django.utils.text import slugify
-from marshmallow import Schema, ValidationError, fields, pre_load, post_load
+from marshmallow import Schema, ValidationError, fields, post_load, pre_load
 from requests import ConnectionError, Timeout
 
 from weather.settings import API_KEY, FORECAST_DAYS_NO, WEATHER_API_ENDPOINT
@@ -37,8 +37,13 @@ class CurrentWeatherSchema(Schema):
         ordered = True
 
     @pre_load
-    def get_con(self, data, many, partial):
+    def get_condition(self, data, many, partial):
         data["condition"] = data["condition"]["text"]
+        return data
+
+    @post_load
+    def add_condition_path(self, data, many, partial):
+        data["condition"] = make_condition_path(data["condition"])
         return data
 
 
@@ -68,11 +73,8 @@ class DailyWeatherSchema(Schema):
 
     @post_load
     def add_condition_path(self, data, many, partial):
-        data["condition"] = self.__make_condition_path(data["condition"])
+        data["condition"] = make_condition_path(data["condition"])
         return data
-
-    def __make_condition_path(self, condition):
-        return f"//static//{slugify(condition).lower()}.png"
 
 
 def prepare_location_object(location_data: dict):
@@ -123,3 +125,7 @@ class WeatherApiAdapter:
             log.error(error)
         else:
             return response.json()
+
+
+def make_condition_path(condition):
+    return f"//static/{slugify(condition).lower()}.png"
