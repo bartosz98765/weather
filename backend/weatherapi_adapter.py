@@ -110,7 +110,7 @@ class WeatherApiAdapter:
     endpoint: str = WEATHER_API_ENDPOINT
 
     def get_forecast(self, city: str) -> dict:
-        url = f"forecast.json?key={API_KEY}&q={city}&days={FORECAST_DAYS_NO}"
+        url = f"{self.endpoint}forecast.json?key={API_KEY}&q={city}&days={FORECAST_DAYS_NO}"
         forecast = self.get_data_from_api(url)
         if forecast:
             return {
@@ -122,7 +122,7 @@ class WeatherApiAdapter:
             }
 
     def get_history_day(self, city: str, past_day) -> dict:
-        url = f"history.json?key={API_KEY}&q={city}&dt={past_day}"
+        url = f"{self.endpoint}history.json?key={API_KEY}&q={city}&dt={past_day}"
         history = self.get_data_from_api(url)
         if history:
             return prepare_daily_object(history["forecast"]["forecastday"][0])
