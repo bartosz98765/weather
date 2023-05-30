@@ -19,7 +19,7 @@ EXPECTED_WEATHER_DATA = {
         "timezone": "Europe/Warsaw",
     },
     "current": {
-        "time_epoch": 1685268900,
+        "last_updated": "2023-05-27 17:15",
         "temp_c": 13.2,
         "wind_kph": 21.6,
         "wind_dir": "NNE",
@@ -30,7 +30,7 @@ EXPECTED_WEATHER_DATA = {
     },
     "daily": [
         {
-            "time_epoch": 1684713600,  # current minus 5 days
+            "date": "2023-05-22",  # current minus 5 days
             "maxtemp_c": 19.5,
             "mintemp_c": 12.4,
             "avgtemp_c": 15.4,
@@ -40,7 +40,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/partly-cloudy.png",
         },
         {
-            "time_epoch": 1684800000,  #  current minus 4 days
+            "date": "2023-05-23",  #  current minus 4 days
             "maxtemp_c": 20.6,
             "mintemp_c": 11.4,
             "avgtemp_c": 15.7,
@@ -50,7 +50,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/partly-cloudy.png",
         },
         {
-            "time_epoch": 1684886400,  #  current minus 3 days
+            "date": "2023-05-24",  #  current minus 3 days
             "maxtemp_c": 21.9,
             "mintemp_c": 12.9,
             "avgtemp_c": 16.7,
@@ -60,7 +60,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/partly-cloudy.png",
         },
         {
-            "time_epoch": 1684972800,  #  current minus 2 days
+            "date": "2023-05-25",  #  current minus 2 days
             "maxtemp_c": 22.6,
             "mintemp_c": 13.6,
             "avgtemp_c": 17.7,
@@ -70,7 +70,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/patchy-rain-possible.png",
         },
         {
-            "time_epoch": 1685059200,  #  current minus 1 days
+            "date": "2023-05-26",  #  current minus 1 days
             "maxtemp_c": 22.5,
             "mintemp_c": 7.6,
             "avgtemp_c": 14.9,
@@ -80,7 +80,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/overcast.png",
         },
         {
-            "time_epoch": 1685145600,  # current day
+            "date": "2023-05-27",  # current day
             "maxtemp_c": 17.3,
             "mintemp_c": 4.9,
             "avgtemp_c": 11.3,
@@ -90,7 +90,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/sunny.png",
         },
         {
-            "time_epoch": 1685232000,  # current plus 1 day
+            "date": "2023-05-28",  # current plus 1 day
             "maxtemp_c": 21.9,
             "mintemp_c": 5.5,
             "avgtemp_c": 13.8,
@@ -100,7 +100,7 @@ EXPECTED_WEATHER_DATA = {
             "condition": "//static/sunny.png",
         },
         {
-            "time_epoch": 1685318400,  # current plus 2 day
+            "date": "2023-05-29",  # current plus 2 day
             "maxtemp_c": 21.2,
             "mintemp_c": 8.1,
             "avgtemp_c": 15.5,
