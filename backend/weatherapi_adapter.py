@@ -1,24 +1,29 @@
 import logging
-import requests
+from dataclasses import dataclass
+from typing import List
 
-from marshmallow import Schema, fields, pre_load, ValidationError
+import requests
+from marshmallow import Schema, ValidationError, fields, pre_load
+from requests import ConnectionError, Timeout
+
+from weather.settings import API_KEY, FORECAST_DAYS_NO, WEATHER_API_ENDPOINT
 
 log = logging.getLogger(__name__)
 
 
 class LocationSchema(Schema):
     name = fields.String(required=True)
-    country = fields.String(required=False)
-    latitude = fields.Float(required=True, load_from="lat")
-    longitude = fields.Float(required=True, load_from="lon")
-    timezone = fields.String(required=True, load_from="tz_id")
+    country = fields.String(required=True)
+    latitude = fields.Float(required=True, data_key="lat")
+    longitude = fields.Float(required=True, data_key="lon")
+    timezone = fields.String(required=True, data_key="tz_id")
 
     class Meta:
-        strict = True
+        ordered = True
 
 
 class CurrentWeatherSchema(Schema):
-    time_epoch = fields.Integer(required=True, load_from="last_updated_epoch")
+    time_epoch = fields.Integer(required=True, data_key="last_updated_epoch")
     temp_c = fields.Float(required=True)
     wind_kph = fields.Float(required=False)
     wind_dir = fields.String(required=False)
@@ -28,16 +33,16 @@ class CurrentWeatherSchema(Schema):
     condition = fields.String(required=True)
 
     class Meta:
-        strict = True
+        ordered = True
 
     @pre_load
-    def get_condition(self, data):
+    def get_con(self, data, many, partial):
         data["condition"] = data["condition"]["text"]
         return data
 
 
 class DailyWeatherSchema(Schema):
-    time_epoch = fields.Integer(required=True)
+    time_epoch = fields.Integer(required=True, data_key="date_epoch")
     maxtemp_c = fields.Float(required=True)
     mintemp_c = fields.Float(required=True)
     avgtemp_c = fields.Float(required=False)
@@ -47,31 +52,63 @@ class DailyWeatherSchema(Schema):
     condition = fields.String(required=True)
 
     class Meta:
-        strict = True
+        ordered = True
 
     @pre_load
-    def get_condition(self, data):
-        data["condition"] = data["condition"]["text"]
+    def get_condition(self, data, many, partial):
+        data["maxtemp_c"] = data["day"]["maxtemp_c"]
+        data["mintemp_c"] = data["day"]["mintemp_c"]
+        data["avgtemp_c"] = data["day"]["avgtemp_c"]
+        data["maxwind_kph"] = data["day"]["maxwind_kph"]
+        data["totalprecip_mm"] = data["day"]["totalprecip_mm"]
+        data["avghumidity"] = data["day"]["avghumidity"]
+        data["condition"] = data["day"]["condition"]["text"]
         return data
 
 
 def prepare_location_object(location_data: dict):
     try:
-        return LocationSchema().load(location_data).data
+        return LocationSchema(unknown="exclude").load(location_data)
     except ValidationError as error:
         log.error(error)
 
 
 def prepare_current_object(current_data: dict):
     try:
-        return CurrentWeatherSchema().load(current_data).data
+        return CurrentWeatherSchema(unknown="exclude").load(current_data)
     except ValidationError as error:
         log.error(error)
 
 
-def prepare_daily_object(daily_data: dict):
-    daily_data["day"]["time_epoch"] = daily_data["date_epoch"]
+def prepare_daily_objects_list(daily_data: dict) -> List[dict]:
     try:
-        return DailyWeatherSchema().load(daily_data).data
+        return DailyWeatherSchema(unknown="exclude", many=True).load(daily_data)
     except ValidationError as error:
         log.error(error)
+
+
+@dataclass(frozen=True)
+class WeatherApiAdapter:
+    endpoint: str = WEATHER_API_ENDPOINT
+
+    def get_forecast(self, city: str) -> dict:
+        url = f"forecast.json?key={API_KEY}&q={city}&days={FORECAST_DAYS_NO}"
+        forecast = self.get_data_from_api(url)
+        if forecast:
+            return {
+                "location": prepare_location_object(forecast["location"]),
+                "current": prepare_current_object(forecast["current"]),
+                "daily": prepare_daily_objects_list(forecast["forecast"]["forecastday"]),
+            }
+
+    def get_history(self):
+        pass
+
+    @staticmethod
+    def get_data_from_api(url: str):
+        try:
+            response = requests.get(url, timeout=10)
+        except (ConnectionError, Timeout) as error:
+            log.error(error)
+        else:
+            return response.json()
