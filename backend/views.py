@@ -5,16 +5,21 @@ from django.views import View
 
 from backend.models import CurrentWeather, DailyWeather, Location
 from backend.weatherapi_adapter import WeatherApiAdapter
+from weather.settings import DATA_VALIDITY_HOURS
 
 
 class MainView(View):
     def get(self, request, city: str):
         now = datetime.now()
-        forecast = WeatherApiAdapter().get_forecast(city)
-        past_day_no = 5
+        data_validity_time = now - timedelta(hours=DATA_VALIDITY_HOURS)
 
-        daily = self.__get_daily_weather(city, now, past_day_no)
-        daily.extend(forecast["forecast_daily"])
+        location, location_created = Location.objects.get_or_create(name=city)
+        if location_created:
+            past_day_no = 5
+            forecast = WeatherApiAdapter().get_forecast(city)
+            daily = self.__get_daily_weather(city, now, past_day_no)
+            daily.extend(forecast["forecast_daily"])
+
 
         context = {
             "location": forecast["location"],

@@ -363,12 +363,12 @@ HISTORY_FROM_API_DAY_1 = {
 }
 
 BUNDLED_DAILY_DATA_FROM_API = {
-    f"forecast.json?key={API_KEY}&q=bialystok&days=3": CURRENT_AND_FORECAST_FROM_API_2_DAYS,
-    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-26": HISTORY_FROM_API_DAY_1,
-    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-25": HISTORY_FROM_API_DAY_2,
-    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-24": HISTORY_FROM_API_DAY_3,
-    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-23": HISTORY_FROM_API_DAY_4,
-    f"history.json?key={API_KEY}&q=bialystok&dt=2023-05-22": HISTORY_FROM_API_DAY_5,
+    f"https://api.weatherapi.com/v1/forecast.json?key={API_KEY}&q=bialystok&days=3": CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+    f"https://api.weatherapi.com/v1/history.json?key={API_KEY}&q=bialystok&dt=2023-05-26": HISTORY_FROM_API_DAY_1,
+    f"https://api.weatherapi.com/v1/history.json?key={API_KEY}&q=bialystok&dt=2023-05-25": HISTORY_FROM_API_DAY_2,
+    f"https://api.weatherapi.com/v1/history.json?key={API_KEY}&q=bialystok&dt=2023-05-24": HISTORY_FROM_API_DAY_3,
+    f"https://api.weatherapi.com/v1/history.json?key={API_KEY}&q=bialystok&dt=2023-05-23": HISTORY_FROM_API_DAY_4,
+    f"https://api.weatherapi.com/v1/history.json?key={API_KEY}&q=bialystok&dt=2023-05-22": HISTORY_FROM_API_DAY_5,
 }
 
 

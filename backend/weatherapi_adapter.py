@@ -22,6 +22,10 @@ class LocationSchema(Schema):
     class Meta:
         ordered = True
 
+    @pre_load
+    def name_to_lower(self, data, many, partial):
+        data["name"] = data["name"].lower()
+        return data
 
 class CurrentWeatherSchema(Schema):
     last_updated = fields.DateTime(required=True)

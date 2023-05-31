@@ -3,14 +3,16 @@ from unittest.mock import patch
 
 from django.test import Client, TestCase
 
-from backend.test_data.api_data import (BUNDLED_DAILY_DATA_FROM_API,
-                                        CURRENT_AND_FORECAST_FROM_API_2_DAYS,
-                                        return_history_day)
+from backend.test_data.api_data import (
+    BUNDLED_DAILY_DATA_FROM_API,
+    CURRENT_AND_FORECAST_FROM_API_2_DAYS,
+    return_history_day,
+)
 from backend.weatherapi_adapter import WeatherApiAdapter
 
 EXPECTED_WEATHER_DATA = {
     "location": {
-        "name": "Bialystok",
+        "name": "bialystok",
         "country": "Poland",
         "latitude": 53.13,
         "longitude": 23.08,
@@ -130,3 +132,15 @@ class TestMainView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
+
+    @patch.object(WeatherApiAdapter, "get_data_from_api")
+    @patch("backend.views.datetime")
+    def test_saving_new_location_weather_data(self, mock_date, get_data_from_api):
+        city = "bialystok"
+        url = f"/main/{city}"
+        get_data_from_api.side_effect = return_history_day
+        mock_date.now.return_value = self.current_time
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
