@@ -3,13 +3,13 @@ from django.db import models
 
 class Location(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    country = models.CharField(max_length=64)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    timezone = models.CharField(max_length=64)
+    country = models.CharField(max_length=64, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    timezone = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name} / {self.country}"
+        return f"{self.name}/{self.country}"
 
 
 class CurrentWeather(models.Model):
