@@ -20,6 +20,8 @@ class MainView(View):
             daily = self.__get_daily_weather(city, now, past_day_no)
             daily.extend(forecast["forecast_daily"])
 
+            updated = Location.objects.update(**forecast["location"])
+
 
         context = {
             "location": forecast["location"],
