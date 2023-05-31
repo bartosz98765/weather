@@ -13,15 +13,18 @@ class MainView(View):
         now = datetime.now()
         data_validity_time = now - timedelta(hours=DATA_VALIDITY_HOURS)
 
-        location, location_created = Location.objects.get_or_create(name=city)
+        _, location_created = Location.objects.get_or_create(name=city)
         if location_created:
             past_day_no = 5
             forecast = WeatherApiAdapter().get_forecast(city)
             daily = self.__get_daily_weather(city, now, past_day_no)
             daily.extend(forecast["forecast_daily"])
 
-            updated = Location.objects.update(**forecast["location"])
-
+            Location.objects.update(**forecast["location"])
+            location = Location.objects.get(name=city)
+            current_weather = CurrentWeather.objects.create(
+                **forecast["current"], location=location
+            )
 
         context = {
             "location": forecast["location"],

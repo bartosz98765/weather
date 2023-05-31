@@ -27,6 +27,7 @@ class LocationSchema(Schema):
         data["name"] = data["name"].lower()
         return data
 
+
 class CurrentWeatherSchema(Schema):
     last_updated = fields.DateTime(required=True)
     temp_c = fields.Float(required=True)

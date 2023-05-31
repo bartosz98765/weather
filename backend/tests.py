@@ -1,9 +1,10 @@
 from datetime import datetime
 from unittest.mock import patch
 
+from django.forms import model_to_dict
 from django.test import Client, TestCase
 
-from backend.models import Location
+from backend.models import Location, CurrentWeather
 from backend.test_data.api_data import (
     BUNDLED_DAILY_DATA_FROM_API,
     CURRENT_AND_FORECAST_FROM_API_2_DAYS,
@@ -146,8 +147,27 @@ class TestMainView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         location = Location.objects.get(name=city)
-        assert location.name == EXPECTED_WEATHER_DATA["location"]["name"]
-        assert location.country == EXPECTED_WEATHER_DATA["location"]["country"]
-        assert location.latitude == EXPECTED_WEATHER_DATA["location"]["latitude"]
-        assert location.longitude == EXPECTED_WEATHER_DATA["location"]["longitude"]
-        assert location.timezone == EXPECTED_WEATHER_DATA["location"]["timezone"]
+        location_dict = model_to_dict(
+            location, fields=["name", "country", "latitude", "longitude", "timezone"]
+        )
+        assert location_dict == EXPECTED_WEATHER_DATA["location"]
+
+        current_weather = CurrentWeather.objects.get(location=location)
+        current_weather_dict = model_to_dict(
+            current_weather,
+            fields=[
+                "last_updated",
+                "temp_c",
+                "wind_kph",
+                "wind_dir",
+                "pressure_mb",
+                "precip_mm",
+                "humidity",
+                "condition",
+            ],
+        )
+        last_updated = current_weather_dict.pop("last_updated")
+        last_updated_iso = last_updated.isoformat()
+        expected_last_updated_iso = EXPECTED_WEATHER_DATA["current"].pop("last_updated")
+        assert last_updated_iso.replace("+00:00", "") == expected_last_updated_iso
+        assert current_weather_dict == EXPECTED_WEATHER_DATA["current"]

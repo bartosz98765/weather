@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from weather.settings import API_KEY
 
 CURRENT_AND_FORECAST_FROM_API_2_DAYS = {
@@ -373,4 +375,4 @@ BUNDLED_DAILY_DATA_FROM_API = {
 
 
 def return_history_day(url):
-    return BUNDLED_DAILY_DATA_FROM_API[url]
+    return deepcopy(BUNDLED_DAILY_DATA_FROM_API[url])
