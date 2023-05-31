@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from django.test import Client, TestCase
 
+from backend.models import Location
 from backend.test_data.api_data import (
     BUNDLED_DAILY_DATA_FROM_API,
     CURRENT_AND_FORECAST_FROM_API_2_DAYS,
@@ -144,3 +145,9 @@ class TestMainView(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        location = Location.objects.get(name=city)
+        assert location.name == EXPECTED_WEATHER_DATA["location"]["name"]
+        assert location.country == EXPECTED_WEATHER_DATA["location"]["country"]
+        assert location.latitude == EXPECTED_WEATHER_DATA["location"]["latitude"]
+        assert location.longitude == EXPECTED_WEATHER_DATA["location"]["longitude"]
+        assert location.timezone == EXPECTED_WEATHER_DATA["location"]["timezone"]
