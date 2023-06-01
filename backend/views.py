@@ -5,7 +5,7 @@ from django.views import View
 
 from backend.models import CurrentWeather, DailyWeather, Location
 from backend.weatherapi_adapter import WeatherApiAdapter
-from weather.settings import DATA_VALIDITY_HOURS
+from weather.settings import DATA_VALIDITY_HOURS, HISTORY_MAX_DAYS
 
 
 class MainView(View):
@@ -13,28 +13,34 @@ class MainView(View):
         now = datetime.now()
         data_validity_time = now - timedelta(hours=DATA_VALIDITY_HOURS)
 
-        _, location_created = Location.objects.get_or_create(name=city)
-        if location_created:
-            past_day_no = 5
+        _, new_location = Location.objects.get_or_create(name=city)
+        if new_location:
             forecast = WeatherApiAdapter().get_forecast(city)
-            daily = self.__get_daily_weather(city, now, past_day_no)
-            daily.extend(forecast["forecast_daily"])
-
             Location.objects.update(**forecast["location"])
+
             location = Location.objects.get(name=city)
             current_weather = CurrentWeather.objects.create(
                 **forecast["current"], location=location
             )
 
-        context = {
-            "location": forecast["location"],
-            "current": forecast["current"],
-            "daily": daily,
-        }
+            history_days = self.__get_daily_weather(city, now)
+            forecast_days = forecast["forecast_daily"]
+            daily = []
+            daily.extend(history_days)
+            daily.extend(forecast_days)
+
+            for day in daily:
+                DailyWeather.objects.create(**day, location=location)
+
+            context = {
+                "location": forecast["location"],
+                "current": forecast["current"],
+                "daily": daily,
+            }
         return JsonResponse(context, safe=False)
 
     @staticmethod
-    def __get_daily_weather(city: str, now: datetime, past_day_count: int):
+    def __get_daily_weather(city: str, now: datetime, past_day_count=HISTORY_MAX_DAYS):
         # daily = DailyWeather.objects.get_or_create(name=name)
         daily = []
         for i in range(past_day_count, 0, -1):
