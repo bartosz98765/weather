@@ -13,12 +13,12 @@ class MainView(View):
         now = datetime.now()
         data_validity_time = now - timedelta(hours=DATA_VALIDITY_HOURS)
 
-        _, new_location = Location.objects.get_or_create(name=city)
-        if new_location:
-            forecast = WeatherApiAdapter().get_forecast(city)
-            Location.objects.update(**forecast["location"])
-
+        try:
             location = Location.objects.get(name=city)
+        except Location.DoesNotExist:
+            forecast = WeatherApiAdapter().get_forecast(city)
+            location = Location.objects.create(**forecast["location"])
+
             current_weather = CurrentWeather.objects.create(
                 **forecast["current"], location=location
             )
@@ -31,12 +31,13 @@ class MainView(View):
 
             for day in daily:
                 DailyWeather.objects.create(**day, location=location)
-
-            context = {
-                "location": forecast["location"],
-                "current": forecast["current"],
-                "daily": daily,
-            }
+        else:
+            pass
+        context = {
+            "location": forecast["location"],
+            "current": forecast["current"],
+            "daily": daily,
+        }
         return JsonResponse(context, safe=False)
 
     @staticmethod
