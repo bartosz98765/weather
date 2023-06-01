@@ -211,8 +211,10 @@ class TestMainView(TestCase):
 
     @staticmethod
     def __given_valid_weather_data_in_database():
-        CurrentWeather.objects.create(EXPECTED_WEATHER_DATA["current"])
-        location = Location.objects.create(EXPECTED_WEATHER_DATA["location"])
+        location = Location.objects.create(**EXPECTED_WEATHER_DATA["location"])
+        CurrentWeather.objects.create(
+            **EXPECTED_WEATHER_DATA["current"], location=location
+        )
         daily = EXPECTED_WEATHER_DATA["daily"]
         for day in daily:
             DailyWeather.objects.create(**day, location=location)
