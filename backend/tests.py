@@ -17,7 +17,7 @@ EXPECTED_WEATHER_DATA = {
         "timezone": "Europe/Warsaw",
     },
     "current": {
-        "last_updated": "2023-05-27T17:15:00",
+        "last_updated": "2023-05-27T17:15:00+00:00",
         "temp_c": 13.2,
         "wind_kph": 21.6,
         "wind_dir": "NNE",
@@ -120,9 +120,7 @@ class TestMainView(TestCase):
 
     @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
-    def test_response_for_new_location(
-        self, mock_date, get_data_from_api
-    ):
+    def test_response_for_new_location(self, mock_date, get_data_from_api):
         city = "bialystok"
         url = f"/main/{city}"
         get_data_from_api.side_effect = return_history_day
@@ -131,6 +129,7 @@ class TestMainView(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        breakpoint()
         self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
 
     @patch.object(WeatherApiAdapter, "get_data_from_api")
@@ -168,7 +167,7 @@ class TestMainView(TestCase):
         expected_last_updated_iso = EXPECTED_WEATHER_DATA["current"].pop("last_updated")
         last_updated = current_weather_dict.pop("last_updated")
         last_updated_iso = last_updated.isoformat()
-        assert last_updated_iso.replace("+00:00", "") == expected_last_updated_iso
+        assert last_updated_iso == expected_last_updated_iso
         assert current_weather_dict == EXPECTED_WEATHER_DATA["current"]
 
         daily_weather = DailyWeather.objects.filter(location=location)
