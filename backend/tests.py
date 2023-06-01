@@ -163,17 +163,16 @@ class TestMainView(TestCase):
                 "condition",
             ],
         )
+        expected_last_updated_iso = EXPECTED_WEATHER_DATA["current"].pop("last_updated")
         last_updated = current_weather_dict.pop("last_updated")
         last_updated_iso = last_updated.isoformat()
-        expected_last_updated_iso = EXPECTED_WEATHER_DATA["current"].pop("last_updated")
         assert last_updated_iso.replace("+00:00", "") == expected_last_updated_iso
         assert current_weather_dict == EXPECTED_WEATHER_DATA["current"]
 
         daily_weather = DailyWeather.objects.filter(location=location)
-        breakpoint()
         assert len(daily_weather) == len(EXPECTED_WEATHER_DATA["daily"])
 
-        history_5_day = daily_weather.filter(date=self.current_time - timedelta(days=5))
+        history_5_day = daily_weather.filter(date=self.current_time - timedelta(days=5)).first()
         history_5_day_dict = model_to_dict(
             history_5_day,
             fields=[
@@ -187,4 +186,9 @@ class TestMainView(TestCase):
                 "condition",
             ],
         )
+
+        expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
+        date = history_5_day_dict.pop("date")
+        date_iso = date.isoformat()
+        assert date_iso.replace("+00:00", "") == expected_date_iso
         assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
