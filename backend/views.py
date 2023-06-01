@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import pytz as pytz
 from django.http import JsonResponse
 from django.views import View
 
@@ -10,14 +11,12 @@ from weather.settings import DATA_VALIDITY_HOURS, HISTORY_MAX_DAYS
 
 class MainView(View):
     def get(self, request, city: str):
-        now = datetime.now()
-        data_validity_time = now - timedelta(hours=DATA_VALIDITY_HOURS)
-
         try:
             location = Location.objects.get(name=city)
         except Location.DoesNotExist:
             forecast = WeatherApiAdapter().get_forecast(city)
             location = Location.objects.create(**forecast["location"])
+            now = datetime.now(location.timezone)
 
             current_weather = CurrentWeather.objects.create(
                 **forecast["current"], location=location
@@ -32,7 +31,12 @@ class MainView(View):
             for day in daily:
                 DailyWeather.objects.create(**day, location=location)
         else:
-            pass
+            now = datetime.now(tz=pytz.timezone(location.timezone))
+            if location.currentweather.last_updated > now - timedelta(
+                hours=DATA_VALIDITY_HOURS
+            ):
+                pass
+                # self.__get_location_objects(location)
         context = {
             "location": forecast["location"],
             "current": forecast["current"],

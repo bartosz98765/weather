@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 from django.forms import model_to_dict
@@ -114,7 +114,9 @@ EXPECTED_WEATHER_DATA = {
 class TestMainView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.current_time = datetime(2023, 5, 27, 17, 15, 00, 000000)
+        self.current_time = datetime(
+            2023, 5, 27, 17, 27, 00, 000000, tzinfo=timezone.utc
+        )
 
     @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
