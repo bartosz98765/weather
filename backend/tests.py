@@ -1,15 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from django.forms import model_to_dict
 from django.test import Client, TestCase
 
-from backend.models import Location, CurrentWeather
-from backend.test_data.api_data import (
-    BUNDLED_DAILY_DATA_FROM_API,
-    CURRENT_AND_FORECAST_FROM_API_2_DAYS,
-    return_history_day,
-)
+from backend.models import Location, CurrentWeather, DailyWeather
+from backend.test_data.api_data import return_history_day
 from backend.weatherapi_adapter import WeatherApiAdapter
 
 EXPECTED_WEATHER_DATA = {
@@ -146,6 +142,7 @@ class TestMainView(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+
         location = Location.objects.get(name=city)
         location_dict = model_to_dict(
             location, fields=["name", "country", "latitude", "longitude", "timezone"]
@@ -171,3 +168,23 @@ class TestMainView(TestCase):
         expected_last_updated_iso = EXPECTED_WEATHER_DATA["current"].pop("last_updated")
         assert last_updated_iso.replace("+00:00", "") == expected_last_updated_iso
         assert current_weather_dict == EXPECTED_WEATHER_DATA["current"]
+
+        daily_weather = DailyWeather.objects.filter(location=location)
+        breakpoint()
+        assert len(daily_weather) == len(EXPECTED_WEATHER_DATA["daily"])
+
+        history_5_day = daily_weather.filter(date=self.current_time - timedelta(days=5))
+        history_5_day_dict = model_to_dict(
+            history_5_day,
+            fields=[
+                "date",
+                "maxtemp_c",
+                "mintemp_c",
+                "avgtemp_c",
+                "maxwind_kph",
+                "totalprecip_mm",
+                "avghumidity",
+                "condition",
+            ],
+        )
+        assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
