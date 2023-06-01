@@ -120,7 +120,7 @@ class TestMainView(TestCase):
 
     @patch.object(WeatherApiAdapter, "get_data_from_api")
     @patch("backend.views.datetime")
-    def test_response_for_new_location_has_json_with_all_data(
+    def test_response_for_new_location(
         self, mock_date, get_data_from_api
     ):
         city = "bialystok"
