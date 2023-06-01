@@ -172,7 +172,9 @@ class TestMainView(TestCase):
         daily_weather = DailyWeather.objects.filter(location=location)
         assert len(daily_weather) == len(EXPECTED_WEATHER_DATA["daily"])
 
-        history_5_day = daily_weather.filter(date=self.current_time - timedelta(days=5)).first()
+        history_5_day = daily_weather.filter(
+            date=self.current_time - timedelta(days=5)
+        ).first()
         history_5_day_dict = model_to_dict(
             history_5_day,
             fields=[
@@ -192,3 +194,25 @@ class TestMainView(TestCase):
         date_iso = date.isoformat()
         assert date_iso.replace("+00:00", "") == expected_date_iso
         assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
+
+    @patch("backend.views.datetime")
+    def test_response_for_existing_location_when_database_has_valid_weather_data(
+        self, mock_date
+    ):
+        mock_date.now.return_value = self.current_time
+        city = "bialystok"
+        url = f"/main/{city}"
+        self.__given_valid_weather_data_in_database()
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
+
+    @staticmethod
+    def __given_valid_weather_data_in_database():
+        CurrentWeather.objects.create(EXPECTED_WEATHER_DATA["current"])
+        location = Location.objects.create(EXPECTED_WEATHER_DATA["location"])
+        daily = EXPECTED_WEATHER_DATA["daily"]
+        for day in daily:
+            DailyWeather.objects.create(**day, location=location)
