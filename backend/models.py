@@ -21,7 +21,7 @@ class CurrentWeather(models.Model):
     precip_mm = models.IntegerField()
     humidity = models.IntegerField()
     condition = models.CharField(max_length=256)
-    location = models.OneToOneField(Location, null=False, on_delete=models.CASCADE)
+    location = models.OneToOneField(Location, null=True, on_delete=models.CASCADE)
 
 
 class DailyWeather(models.Model):

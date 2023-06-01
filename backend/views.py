@@ -34,7 +34,7 @@ class MainView(View):
             forecast = WeatherApiAdapter().get_forecast(city)
 
             location = Location.objects.create(**forecast["location"])
-            now = datetime.now(location.timezone)
+            now = datetime.now()
 
             CurrentWeather.objects.create(**forecast["current"], location=location)
 
