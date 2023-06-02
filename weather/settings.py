@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     "backend.apps.BackendConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -127,3 +129,5 @@ API_KEY = "ffd50e3bb2ba4a4ea28202210232605"
 FORECAST_DAYS_NO = 3
 DATA_VALIDITY_HOURS = 3
 HISTORY_MAX_DAYS = 5
+
+CORS_ORIGIN_ALLOW_ALL = True
