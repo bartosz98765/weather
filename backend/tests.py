@@ -129,7 +129,6 @@ class TestMainView(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        breakpoint()
         self.assertEqual(response.json(), EXPECTED_WEATHER_DATA)
 
     @patch.object(WeatherApiAdapter, "get_data_from_api")
