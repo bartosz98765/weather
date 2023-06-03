@@ -38,6 +38,8 @@ class MainView(View):
                 hours=DATA_VALIDITY_HOURS
             ):
                 context = self.__get_location_objects_from_database(location)
+            else:
+                context = self.__get_all_weather_data(city)
         if context:
             return JsonResponse(context, safe=False)
 
