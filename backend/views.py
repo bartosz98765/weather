@@ -46,7 +46,7 @@ class MainView(View):
         forecast = WeatherApiAdapter().get_forecast(city)
         location, _ = Location.objects.get_or_create(**forecast["location"])
         now = datetime.now()
-        CurrentWeather.objects.create(**forecast["current"], location=location)
+        CurrentWeather.objects.update_or_create(defaults ={**forecast["current"]}, location=location)
         history_days = self.__get_history_daily_weather(city, now)
         forecast_days = forecast["forecast_daily"]
         daily = []
