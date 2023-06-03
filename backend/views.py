@@ -27,7 +27,6 @@ class LocationResponseSchema(Schema):
 
 class MainView(View):
     def get(self, request, city: str):
-        context = None
         try:
             location = Location.objects.get(name=city)
         except Location.DoesNotExist:
