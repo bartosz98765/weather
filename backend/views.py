@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
-
-import pytz as pytz
+try:
+    import zoneinfo
+except ImportError:
+    from backports import zoneinfo
 from django.http import JsonResponse
 from django.views import View
 from marshmallow import Schema, fields
@@ -32,7 +34,7 @@ class MainView(View):
         except Location.DoesNotExist:
             context = self.__get_all_weather_data(city)
         else:
-            now = datetime.now(tz=pytz.timezone(location.timezone))
+            now = datetime.now(tz=zoneinfo.ZoneInfo(location.timezone))
             if location.currentweather.last_updated > now - timedelta(
                 hours=DATA_VALIDITY_HOURS
             ):
