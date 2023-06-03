@@ -31,26 +31,7 @@ class MainView(View):
         try:
             location = Location.objects.get(name=city)
         except Location.DoesNotExist:
-            forecast = WeatherApiAdapter().get_forecast(city)
-
-            location, _ = Location.objects.get_or_create(**forecast["location"])
-            now = datetime.now()
-
-            CurrentWeather.objects.create(**forecast["current"], location=location)
-
-            history_days = self.__get_history_daily_weather(city, now)
-            forecast_days = forecast["forecast_daily"]
-            daily = []
-            daily.extend(history_days)
-            daily.extend(forecast_days)
-
-            for day in daily:
-                DailyWeather.objects.create(**day, location=location)
-            context = {
-                "location": forecast["location"],
-                "current": forecast["current"],
-                "daily": daily,
-            }
+            context = self.__get_all_weather_data(city)
         else:
             now = datetime.now(tz=pytz.timezone(location.timezone))
             if location.currentweather.last_updated > now - timedelta(
@@ -59,6 +40,25 @@ class MainView(View):
                 context = self.__get_location_objects_from_database(location)
         if context:
             return JsonResponse(context, safe=False)
+
+    def __get_all_weather_data(self, city):
+        forecast = WeatherApiAdapter().get_forecast(city)
+        location, _ = Location.objects.get_or_create(**forecast["location"])
+        now = datetime.now()
+        CurrentWeather.objects.create(**forecast["current"], location=location)
+        history_days = self.__get_history_daily_weather(city, now)
+        forecast_days = forecast["forecast_daily"]
+        daily = []
+        daily.extend(history_days)
+        daily.extend(forecast_days)
+        for day in daily:
+            DailyWeather.objects.create(**day, location=location)
+        context = {
+            "location": forecast["location"],
+            "current": forecast["current"],
+            "daily": daily,
+        }
+        return context
 
     @staticmethod
     def __get_history_daily_weather(
