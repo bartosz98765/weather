@@ -33,7 +33,7 @@ class MainView(View):
         except Location.DoesNotExist:
             forecast = WeatherApiAdapter().get_forecast(city)
 
-            location = Location.objects.create(**forecast["location"])
+            location, _ = Location.objects.get_or_create(**forecast["location"])
             now = datetime.now()
 
             CurrentWeather.objects.create(**forecast["current"], location=location)
