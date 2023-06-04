@@ -1,0 +1,8 @@
+**/db.sqlite3
+**/docker-compose.yaml
+**/.Dockerfile
+**/.dockerignore
+**/.git
+**/.gitignore
+**/.idea
+**/__pycache__
