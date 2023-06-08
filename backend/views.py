@@ -1,8 +1,4 @@
-from datetime import datetime, timedelta
-try:
-    import zoneinfo
-except ImportError:
-    from backports import zoneinfo
+from datetime import datetime, timedelta, timezone
 from django.http import JsonResponse
 from django.views import View
 from marshmallow import Schema, fields
@@ -34,7 +30,7 @@ class MainView(View):
         except Location.DoesNotExist:
             context = self.__get_all_weather_data(city)
         else:
-            now = datetime.now(tz=zoneinfo.ZoneInfo(location.timezone))
+            now = (datetime.now()).replace(tzinfo=timezone.utc)
             if location.currentweather.last_updated > now - timedelta(
                 hours=DATA_VALIDITY_HOURS
             ):
