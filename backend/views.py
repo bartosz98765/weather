@@ -28,23 +28,25 @@ class MainView(View):
         try:
             location = Location.objects.get(name=city)
         except Location.DoesNotExist:
-            context = self.__get_all_weather_data(city)
+            context = self.__get_all_weather_data_from_api(city)
         else:
             now = (datetime.now()).replace(tzinfo=timezone.utc)
             if location.currentweather.last_updated > now - timedelta(
                 hours=DATA_VALIDITY_HOURS
             ):
-                context = self.__get_location_objects_from_database(location)
+                context = self.__get_all_weather_data_from_database(location)
             else:
-                context = self.__get_all_weather_data(city)
+                context = self.__get_all_weather_data_from_api(city)
         if context:
             return JsonResponse(context, safe=False)
 
-    def __get_all_weather_data(self, city):
+    def __get_all_weather_data_from_api(self, city):
         forecast = WeatherApiAdapter().get_forecast(city)
         location, _ = Location.objects.get_or_create(**forecast["location"])
         now = datetime.now()
-        CurrentWeather.objects.update_or_create(defaults ={**forecast["current"]}, location=location)
+        CurrentWeather.objects.update_or_create(
+            defaults={**forecast["current"]}, location=location
+        )
         history_days = self.__get_history_daily_weather(city, now)
         forecast_days = forecast["forecast_daily"]
         daily = []
@@ -71,7 +73,7 @@ class MainView(View):
         return history_days
 
     @staticmethod
-    def __get_location_objects_from_database(location):
+    def __get_all_weather_data_from_database(location):
         location_dict = LocationResponseSchema().dump(location)
         current_dict = CurrentWeatherSchema().dump(location.currentweather)
         daily_dict = DailyWeatherSchema(many=True).dump(location.dailyweather_set.all())
