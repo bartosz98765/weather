@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from datetime import timezone
 from typing import List, Optional
 
 import requests
@@ -47,7 +48,10 @@ class CurrentWeatherSchema(Schema):
         return data
 
     @post_load
-    def add_condition_path(self, data, many, partial):
+    def modify_data(self, data, many, partial):
+        data["last_updated"] = (
+            data["last_updated"].replace(tzinfo=timezone.utc)
+        ).isoformat()
         data["condition"] = make_condition_path(data["condition"])
         return data
 
