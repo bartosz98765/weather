@@ -226,9 +226,7 @@ class TestMainView(TestCase):
 
         expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
         date = history_5_day_dict.pop("date")
-        date_iso = date.isoformat()
-        breakpoint()
-        assert date_iso.replace("+00:00", "") == expected_date_iso
+        assert date.isoformat() == expected_date_iso
         assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
 
     @patch("backend.views.datetime")
