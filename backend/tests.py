@@ -271,7 +271,6 @@ class TestMainView(TestCase):
 
         location = Location.objects.get(name=city)
         daily_weather = DailyWeather.objects.filter(location=location)
-        breakpoint()
         assert len(daily_weather) == len(EXPECTED_WEATHER_DATA["daily"])
         history_5_day = daily_weather.filter(
             date=self.current_time - timedelta(days=5)
