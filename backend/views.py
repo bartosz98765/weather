@@ -36,6 +36,7 @@ class MainView(View):
             ):
                 context = self.__get_all_weather_data_from_database(location)
             else:
+                self.__delete_old_daily_data(location)
                 context = self.__get_all_weather_data_from_api(city)
         if context:
             return JsonResponse(context, safe=False)
@@ -78,3 +79,7 @@ class MainView(View):
         current_dict = CurrentWeatherSchema().dump(location.currentweather)
         daily_dict = DailyWeatherSchema(many=True).dump(location.dailyweather_set.all())
         return {"location": location_dict, "current": current_dict, "daily": daily_dict}
+
+    @staticmethod
+    def __delete_old_daily_data(location):
+        location.dailyweather_set.all().delete()
