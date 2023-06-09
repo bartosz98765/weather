@@ -110,6 +110,41 @@ EXPECTED_WEATHER_DATA = {
     ],
 }
 
+OLD_DAILY_WEATHER_DATA = {
+    "current": {
+        "last_updated": "2023-05-21T11:30:00+00:00",
+        "temp_c": 13.1,
+        "wind_kph": 21.2,
+        "wind_dir": "NNE",
+        "pressure_mb": 1023,
+        "precip_mm": 0,
+        "humidity": 36,
+        "condition": "//static/partly-cloudy.png",
+    },
+    "daily": [
+        {
+            "date": "2023-05-20",  # current minus 7 days
+            "maxtemp_c": 19.4,
+            "mintemp_c": 12.5,
+            "avgtemp_c": 15.6,
+            "maxwind_kph": 7.7,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 63,
+            "condition": "//static/partly-cloudy.png",
+        },
+        {
+            "date": "2023-05-21",  # current minus 6 days
+            "maxtemp_c": 20.1,
+            "mintemp_c": 11.2,
+            "avgtemp_c": 15.3,
+            "maxwind_kph": 13.4,
+            "totalprecip_mm": 0.0,
+            "avghumidity": 65,
+            "condition": "//static/partly-cloudy.png",
+        },
+    ],
+}
+
 
 class TestMainView(TestCase):
     def setUp(self):
@@ -192,6 +227,7 @@ class TestMainView(TestCase):
         expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
         date = history_5_day_dict.pop("date")
         date_iso = date.isoformat()
+        breakpoint()
         assert date_iso.replace("+00:00", "") == expected_date_iso
         assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
 
@@ -216,5 +252,57 @@ class TestMainView(TestCase):
             **EXPECTED_WEATHER_DATA["current"], location=location
         )
         daily = EXPECTED_WEATHER_DATA["daily"]
+        for day in daily:
+            DailyWeather.objects.create(**day, location=location)
+
+    @patch.object(WeatherApiAdapter, "get_data_from_api")
+    @patch("backend.views.datetime")
+    def test_while_responding_for_existing_location_old_data_has_been_removed_from_database(
+        self, mock_date, get_data_from_api
+    ):
+        mock_date.now.return_value = self.current_time
+        city = "bialystok"
+        url = f"/main/{city}"
+        get_data_from_api.side_effect = return_history_day
+        mock_date.now.return_value = self.current_time
+        self.__given_old_weather_data_in_database()
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        location = Location.objects.get(name=city)
+        daily_weather = DailyWeather.objects.filter(location=location)
+        breakpoint()
+        assert len(daily_weather) == len(EXPECTED_WEATHER_DATA["daily"])
+        history_5_day = daily_weather.filter(
+            date=self.current_time - timedelta(days=5)
+        ).first()
+        history_5_day_dict = model_to_dict(
+            history_5_day,
+            fields=[
+                "date",
+                "maxtemp_c",
+                "mintemp_c",
+                "avgtemp_c",
+                "maxwind_kph",
+                "totalprecip_mm",
+                "avghumidity",
+                "condition",
+            ],
+        )
+
+        expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
+        date = history_5_day_dict.pop("date")
+        assert date.isoformat() == expected_date_iso
+        assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
+
+    @staticmethod
+    def __given_old_weather_data_in_database():
+        location = Location.objects.create(**EXPECTED_WEATHER_DATA["location"])
+        CurrentWeather.objects.create(
+            **OLD_DAILY_WEATHER_DATA["current"], location=location
+        )
+        daily = OLD_DAILY_WEATHER_DATA["daily"]
         for day in daily:
             DailyWeather.objects.create(**day, location=location)
