@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
@@ -223,11 +224,11 @@ class TestMainView(TestCase):
                 "condition",
             ],
         )
-
-        expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
+        expected_weather_data_5_day = deepcopy(EXPECTED_WEATHER_DATA["daily"][0])
+        expected_date_iso = expected_weather_data_5_day.pop("date")
         date = history_5_day_dict.pop("date")
         assert date.isoformat() == expected_date_iso
-        assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
+        assert history_5_day_dict == expected_weather_data_5_day
 
     @patch("backend.views.datetime")
     def test_response_for_existing_location_when_database_has_valid_weather_data(
@@ -289,10 +290,11 @@ class TestMainView(TestCase):
             ],
         )
 
-        expected_date_iso = EXPECTED_WEATHER_DATA["daily"][0].pop("date")
+        expected_weather_data_5_day = deepcopy(EXPECTED_WEATHER_DATA["daily"][0])
+        expected_date_iso = expected_weather_data_5_day.pop("date")
         date = history_5_day_dict.pop("date")
         assert date.isoformat() == expected_date_iso
-        assert history_5_day_dict == EXPECTED_WEATHER_DATA["daily"][0]
+        assert history_5_day_dict == expected_weather_data_5_day
 
     @staticmethod
     def __given_old_weather_data_in_database():
