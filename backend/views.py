@@ -43,7 +43,10 @@ class MainView(View):
 
     def __get_all_weather_data_from_api(self, city):
         forecast = WeatherApiAdapter().get_forecast(city)
-        location, _ = Location.objects.get_or_create(**forecast["location"])
+        city_name = forecast["location"]["name"]
+        location, _ = Location.objects.get_or_create(
+            name=city_name, defaults={**forecast["location"]}
+        )
         now = datetime.now()
         CurrentWeather.objects.update_or_create(
             defaults={**forecast["current"]}, location=location
